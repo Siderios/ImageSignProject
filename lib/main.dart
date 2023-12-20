@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_sign_project/home_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
-      ),home: const Scaffold(),
+      ),home: const HomeScreen(),
     );
   }
 }
