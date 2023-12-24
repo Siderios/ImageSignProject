@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,6 +20,18 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = false;
   String watermarkText = "", imgname = "Фото не выбрано";
   List<bool> textOrImage = [true, false];
+
+  static Future<Uint8List> watermarkWrapper(Map elements) async {
+    final result = await ImageWatermark.addTextWatermark(
+      imgBytes: elements["imgBytes"],
+      color: Colors.orange,
+      watermarkText: elements["watermarkText"],
+      dstX: elements['dstX'],
+      dstY: elements['dstY'],
+    );
+    return result;
+  }
+
   pickImage() async {
     final image = await _picker.pickImage(
       source: ImageSource.gallery,
@@ -131,17 +144,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 10),
                         ElevatedButton(
                             onPressed: () async {
+                              Map elements = {
+                                "imgBytes": imgBytes,
+                                "watermarkText": watermarkText,
+                                'dstX': 20,
+                                'dstY': 30,
+                              };
                               setState(() => isLoading = true);
                               if (textOrImage[0]) {
                                 watermarkedImgBytes =
-                                    await ImageWatermark.addTextWatermark(
-                                  ///image bytes
-                                  imgBytes: imgBytes!,
-                                  color: Colors.orange,
-                                  watermarkText: watermarkText,
-                                  dstX: 20,
-                                  dstY: 30,
-                                );
+                                    await compute<Map, Uint8List>(
+                                        (els) => watermarkWrapper(els),
+                                        elements);
                               } else {
                                 watermarkedImgBytes =
                                     await ImageWatermark.addImageWatermark(
